@@ -1,14 +1,23 @@
 module BootstrapForm
   module Helpers
     module Bootstrap
+
       def submit(name = nil, options = {})
-        options.reverse_merge! class: 'btn btn-default'
+        options[:class] = ['btn','btn-default'].concat( (options[:class] || '').split(' ') ).compact.uniq.join(' ')
         super(name, options)
       end
 
       def primary(name = nil, options = {})
-        options.reverse_merge! class: 'btn btn-primary'
+        options[:class] = ['btn-primary'].concat( (options[:class] || '').split(' ') ).compact.uniq.join(' ')
         submit(name, options)
+      end
+
+      def form_link(path, name, options = {})
+        options.symbolize_keys!
+        anchor_text = translate(".link.anchor_text.#{name}")
+        options[:title] ||= translate(".link.title.#{name}")
+
+        form_group { ActionController::Base.helpers.link_to(anchor_text, path, options) }
       end
 
       def alert_message(title, options = {})

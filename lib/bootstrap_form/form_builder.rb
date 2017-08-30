@@ -15,7 +15,7 @@ module BootstrapForm
 
     DATE_SELECT_HELPERS = %w{date_select time_select datetime_select}
 
-    delegate :content_tag, :capture, :concat, to: :@template
+    delegate :content_tag, :capture, :concat, :translate, to: :@template
 
     def initialize(object_name, object, template, options)
       @layout = options[:layout]
@@ -39,6 +39,14 @@ module BootstrapForm
       define_method(with_method_name) do |name, options = {}|
         form_group_builder(name, options) do
           prepend_and_append_input(options) do
+            options.symbolize_keys!
+            if (scope = options.delete(:title_scope)).present?
+              options[:title] = I18n.t(name, scope: scope)
+            end
+            if (scope = options.delete(:placeholder_scope)).present?
+              options[:placeholder] = I18n.t(name, scope: scope)
+            end
+
             send(without_method_name, name, options)
           end
         end
@@ -146,9 +154,10 @@ module BootstrapForm
 
     def radio_button_with_bootstrap(name, value, *args)
       options = args.extract_options!.symbolize_keys!
-      args << options.except(:label, :label_class, :help, :inline)
+      args << options.except(:label, :label_class, :help, :inline, :label_scope)
 
-      html = radio_button_without_bootstrap(name, value, *args) + " " + options[:label]
+      html = radio_button_without_bootstrap(name, value, *args) + " "
+      html += options[:label_scope].present? ? I18n.translate("#{name}.#{value}", scope: options[:label_scope]) : options[:label]
 
       disabled_class = " disabled" if options[:disabled]
       label_class    = options[:label_class]
@@ -201,10 +210,13 @@ module BootstrapForm
       options[:class] << " #{error_class}" if has_error?(name)
       options[:class] << " #{feedback_class}" if options[:icon]
 
-      content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout)) do
+      # let label: true be valid on form_group and let generate_label do the magic
+      options[:label] = {} if options[:label].is_a?(TrueClass)
+
+      content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout, :skip_full_error_message)) do
         label = generate_label(options[:id], name, options[:label], options[:label_col], options[:layout]) if options[:label]
         control = capture(&block).to_s
-        control.concat(generate_help(name, options[:help]).to_s)
+        control.concat(generate_help(name, options[:help], options[:skip_full_error_message]).to_s)
         control.concat(generate_icon(options[:icon])) if options[:icon]
 
         if get_group_layout(options[:layout]) == :horizontal
@@ -322,6 +334,7 @@ module BootstrapForm
       icon = options.delete(:icon)
       label_col = options.delete(:label_col)
       control_col = options.delete(:control_col)
+      skip_full_error_message = options.delete(:skip_full_error_message)
       layout = get_group_layout(options.delete(:layout))
       form_group_options = {
         id: options[:id],
@@ -329,6 +342,7 @@ module BootstrapForm
         icon: icon,
         label_col: label_col,
         control_col: control_col,
+        skip_full_error_message: skip_full_error_message,
         layout: layout,
         class: wrapper_class
       }
@@ -353,6 +367,7 @@ module BootstrapForm
         form_group_options.merge!(label: {
           text: label_text,
           class: label_class,
+          skip_full_error_message: skip_full_error_message,
           skip_required: options.delete(:skip_required)
         })
       end
@@ -375,21 +390,21 @@ module BootstrapForm
       unless options.delete(:skip_required)
         classes << "required" if required_attribute?(object, name)
       end
+      skip_full_error_message = options.delete(:skip_full_error_message)
 
       options[:class] = classes.compact.join(" ")
 
       if label_errors && has_error?(name)
-        error_messages = get_error_messages(name)
+        error_messages = get_error_messages(name, skip_full_error_message)
         label_text = (options[:text] || object.class.human_attribute_name(name)).to_s.concat(" #{error_messages}")
         label(name, label_text, options.except(:text))
       else
         label(name, options[:text], options.except(:text))
       end
-
     end
 
-    def generate_help(name, help_text)
-      help_text = get_error_messages(name) if has_error?(name) && inline_errors
+    def generate_help(name, help_text, skip_full_error_message = false)
+      help_text = get_error_messages(name, skip_full_error_message) if has_error?(name) && inline_errors
       return if help_text === false
 
       help_text ||= get_help_text_by_i18n_key(name)
@@ -401,8 +416,16 @@ module BootstrapForm
       content_tag(:span, "", class: "glyphicon glyphicon-#{icon} form-control-feedback")
     end
 
-    def get_error_messages(name)
-      object.errors[name].join(", ")
+    def get_error_messages(name, skip_full_error_message = false)
+      if skip_full_error_message
+        return object.errors[name].join(", ")
+      end
+
+      errors = [].concat(object.errors[name])
+      errors[0] = object.errors.full_messages_for(name).first
+      msg = errors.to_sentence
+      # add a dot if string does not already end with one of the chars !, ? or .
+      /[!.?]/.match(msg[-1, 1]).nil? ? "#{msg}." : msg
     end
 
     def inputs_collection(name, collection, value, text, options = {}, &block)
