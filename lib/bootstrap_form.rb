@@ -1,5 +1,5 @@
-require 'bootstrap_form/form_builder'
-require 'bootstrap_form/helper'
+require_relative './bootstrap_form/form_builder'
+require_relative './bootstrap_form/helper'
 
 module BootstrapForm
   module Rails
