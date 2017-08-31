@@ -23,8 +23,10 @@ module BootstrapForm
             anchor_text = translate(".link.anchor_text.#{key}", **params)
             options[:title] ||= translate(".link.title.#{key}", **params)
           end
+        else
+          anchor_text ||= translate(".link.anchor_text.#{name_or_hash}")
+          options[:title] ||= translate(".link.title.#{name_or_hash}")
         end
-        anchor_text ||= translate(".link.anchor_text.#{name_or_hash}")
 
         form_group { ActionController::Base.helpers.link_to(anchor_text, path, options) }
       end
