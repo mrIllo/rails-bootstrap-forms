@@ -40,11 +40,12 @@ module BootstrapForm
         form_group_builder(name, options) do
           prepend_and_append_input(options) do
             options.symbolize_keys!
+            translate_params = options.delete(:translate_params) || {}
             if (scope = options.delete(:title_scope)).present?
-              options[:title] = I18n.t(name, scope: scope)
+              options[:title] = I18n.t(name, scope: scope, **translate_params)
             end
             if (scope = options.delete(:placeholder_scope)).present?
-              options[:placeholder] = I18n.t(name, scope: scope)
+              options[:placeholder] = I18n.t(name, scope: scope, **translate_params)
             end
 
             send(without_method_name, name, options)
@@ -122,10 +123,17 @@ module BootstrapForm
 
     def check_box_with_bootstrap(name, options = {}, checked_value = "1", unchecked_value = "0", &block)
       options = options.symbolize_keys!
-      check_box_options = options.except(:label, :label_class, :help, :inline)
+      translate_params = options.delete(:translate_params) || {}
+      check_box_options = options.except(:label, :label_class, :help, :inline, :label_scope)
 
       html = check_box_without_bootstrap(name, check_box_options, checked_value, unchecked_value)
-      label_content = block_given? ? capture(&block) : options[:label]
+      label_content = if block_given?
+        capture(&block)
+      elsif options[:label_scope].present?
+        I18n.translate("#{name}.#{checked_value}", scope: options[:label_scope], **translate_params)
+      else
+        options[:label]
+      end
       html.concat(" ").concat(label_content || (object && object.class.human_attribute_name(name)) || name.to_s.humanize)
 
       label_name = name
@@ -155,9 +163,10 @@ module BootstrapForm
     def radio_button_with_bootstrap(name, value, *args)
       options = args.extract_options!.symbolize_keys!
       args << options.except(:label, :label_class, :help, :inline, :label_scope)
+      translate_params = options.delete(:translate_params) || {}
 
       html = radio_button_without_bootstrap(name, value, *args) + " "
-      html += options[:label_scope].present? ? I18n.translate("#{name}.#{value}", scope: options[:label_scope]) : options[:label]
+      html += options[:label_scope].present? ? I18n.translate("#{name}.#{value}", scope: options[:label_scope], **translate_params) : options[:label]
 
       disabled_class = " disabled" if options[:disabled]
       label_class    = options[:label_class]
