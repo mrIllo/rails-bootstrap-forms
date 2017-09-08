@@ -87,14 +87,19 @@ module BootstrapForm
       end
 
       def prepend_and_append_input(options, &block)
-        options = options.extract!(:prepend, :append, :input_group_class)
-        input_group_class = ["input-group", options[:input_group_class]].compact.join(' ')
+        options = options.extract!(:prepend, :append, :input_group_class, :skip_input_group)
+        input_group_class = ['input-group', options[:input_group_class]].compact.join(' ')
 
         input = capture(&block)
+        prepend = options[:prepend] || ''
+        prepend = content_tag(:span, prepend, class: input_group_class(options[:prepend])) if options[:prepend] and not options[:skip_input_group]
+        append = options[:append] || ''
+        append = content_tag(:span, append, class: input_group_class(options[:append])) if options[:append] and not options[:skip_input_group]
+        if prepend.present? or append.present?
+          input = prepend + input + append
+          input = content_tag(:div, input.html_safe, class: input_group_class) unless options[:skip_input_group]
+        end
 
-        input = content_tag(:span, options[:prepend], class: input_group_class(options[:prepend])) + input if options[:prepend]
-        input << content_tag(:span, options[:append], class: input_group_class(options[:append])) if options[:append]
-        input = content_tag(:div, input, class: input_group_class) unless options.empty?
         input
       end
 
@@ -107,7 +112,7 @@ module BootstrapForm
       end
 
       def static_class
-        "form-control-static"
+        'form-control-static'
       end
     end
   end
