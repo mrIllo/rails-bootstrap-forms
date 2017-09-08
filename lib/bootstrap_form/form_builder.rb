@@ -222,7 +222,7 @@ module BootstrapForm
       # let label: true be valid on form_group and let generate_label do the magic
       options[:label] = {} if options[:label].is_a?(TrueClass)
 
-      content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout, :hide_attribute_name)) do
+      content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout, :hide_attribute_name, :control_wrapper)) do
         label = generate_label(options[:id], name, options[:label], options[:label_col], options[:layout]) if options[:label]
         control = capture(&block).to_s
         control.concat(generate_help(name, options[:help], options[:hide_attribute_name] || false).to_s)
