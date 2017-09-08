@@ -237,6 +237,12 @@ module BootstrapForm
           control = content_tag(:div, control, class: control_class)
         end
 
+        if (opts = options[:control_wrapper]).is_a?(Hash)
+          wrapper_tag = opts[:tag_name] || :div
+          wrapper_class = ['input-wrapper', opts[:class]].compact.join(' ')
+          control = content_tag(wrapper_tag, control.html_safe, class: wrapper_class)
+        end
+
         concat(label).concat(control)
       end
     end
@@ -353,7 +359,8 @@ module BootstrapForm
         control_col: control_col,
         hide_attribute_name: hide_attribute_name,
         layout: layout,
-        class: wrapper_class
+        class: wrapper_class,
+        control_wrapper: css_options.delete(:control_wrapper)
       }
 
       if wrapper_options.is_a?(Hash)
