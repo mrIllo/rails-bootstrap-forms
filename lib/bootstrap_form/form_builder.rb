@@ -222,10 +222,10 @@ module BootstrapForm
       # let label: true be valid on form_group and let generate_label do the magic
       options[:label] = {} if options[:label].is_a?(TrueClass)
 
-      content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout, :hide_attribute_name, :control_wrapper)) do
+      content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout, :hide_attribute_name, :control_wrapper, :help_class)) do
         label = generate_label(options[:id], name, options[:label], options[:label_col], options[:layout]) if options[:label]
         control = capture(&block).to_s
-        control.concat(generate_help(name, options[:help], options[:hide_attribute_name] || false).to_s)
+        control.concat(generate_help(name, options[:help], options[:help_class], options[:hide_attribute_name] || false).to_s)
         control.concat(generate_icon(options[:icon])) if options[:icon]
 
         if get_group_layout(options[:layout]) == :horizontal
@@ -301,6 +301,10 @@ module BootstrapForm
       "has-feedback"
     end
 
+    def help_class
+      'help-block'
+    end
+
     def control_specific_class(method)
       "rails-bootstrap-forms-#{method.gsub(/_/, "-")}"
     end
@@ -354,6 +358,7 @@ module BootstrapForm
       form_group_options = {
         id: options[:id],
         help: help,
+        help_class: css_options.delete(:help_class),
         icon: icon,
         label_col: label_col,
         control_col: control_col,
@@ -419,13 +424,14 @@ module BootstrapForm
       end
     end
 
-    def generate_help(name, help_text, hide_attribute_name = false)
+    def generate_help(name, help_text, options_help_class, hide_attribute_name = false)
       help_text = get_error_messages(name, hide_attribute_name) if has_error?(name) && inline_errors
       return if help_text === false
 
       help_text ||= get_help_text_by_i18n_key(name)
+      classes = [options_help_class, help_class].compact.join(' ')
 
-      content_tag(:span, help_text, class: 'help-block') if help_text.present?
+      content_tag(:span, help_text, class: classes) if help_text.present?
     end
 
     def generate_icon(icon)
