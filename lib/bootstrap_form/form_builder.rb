@@ -71,6 +71,12 @@ module BootstrapForm
 
     def file_field_with_bootstrap(name, options = {})
       form_group_builder(name, options.reverse_merge(control_class: nil)) do
+        options.symbolize_keys!
+        translate_params = options.delete(:translate_params) || {}
+        if (scope = options.delete(:title_scope)).present?
+          options[:title] = I18n.t(name, scope: scope, **translate_params)
+        end
+
         file_field_without_bootstrap(name, options)
       end
     end
