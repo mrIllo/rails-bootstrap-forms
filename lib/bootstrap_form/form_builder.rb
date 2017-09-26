@@ -220,6 +220,7 @@ module BootstrapForm
     def form_group(*args, &block)
       options = args.extract_options!
       name = args.first
+      control_wrapper = options.delete(:control_wrapper)
 
       options[:class] = ["form-group", options[:class]].compact.join(' ')
       options[:class] << " #{error_class}" if has_error?(name)
@@ -228,9 +229,16 @@ module BootstrapForm
       # let label: true be valid on form_group and let generate_label do the magic
       options[:label] = {} if options[:label].is_a?(TrueClass)
 
-      content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout, :hide_attribute_name, :control_wrapper, :help_class)) do
+      content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout, :hide_attribute_name, :help_class)) do
         label = generate_label(options[:id], name, options[:label], options[:label_col], options[:layout]) if options[:label]
         control = capture(&block).to_s
+
+        if control_wrapper.is_a?(Hash)
+          wrapper_tag = control_wrapper[:tag_name] || :div
+          wrapper_class = ['input-wrapper', control_wrapper[:class]].compact.join(' ')
+          control = content_tag(wrapper_tag, control.html_safe, class: wrapper_class)
+        end
+
         control.concat(generate_help(name, options[:help], options[:help_class], options[:hide_attribute_name] || false).to_s)
         control.concat(generate_icon(options[:icon])) if options[:icon]
 
@@ -241,12 +249,6 @@ module BootstrapForm
             control_class = "#{control_class} #{control_offset}"
           end
           control = content_tag(:div, control, class: control_class)
-        end
-
-        if (opts = options[:control_wrapper]).is_a?(Hash)
-          wrapper_tag = opts[:tag_name] || :div
-          wrapper_class = ['input-wrapper', opts[:class]].compact.join(' ')
-          control = content_tag(wrapper_tag, control.html_safe, class: wrapper_class)
         end
 
         concat(label).concat(control)
