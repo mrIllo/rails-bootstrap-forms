@@ -87,6 +87,18 @@ module BootstrapForm
       def select_with_bootstrap(method, choices = nil, options = {}, html_options = {}, &block)
         form_group_builder(method, options, html_options) do
           prepend_and_append_input(options) do
+            options.symbolize_keys!
+            translate_params = options.delete(:translate_params) || {}
+            if (scope = options.delete(:title_scope)).present?
+              html_options[:title] = I18n.t(method, scope: scope, **translate_params)
+            end
+            # special use case for placeholders in select
+            if (scope = options.delete(:placeholder_scope)).present?
+              if choices.respond_to?(:unshift)
+                choices.unshift([I18n.t(method, scope: scope, **translate_params), nil])
+              end
+            end
+
             select_without_bootstrap(method, choices, options, html_options, &block)
           end
         end
@@ -95,6 +107,18 @@ module BootstrapForm
       def select_with_bootstrap(method, choices, options = {}, html_options = {})
         form_group_builder(method, options, html_options) do
           prepend_and_append_input(options) do
+            options.symbolize_keys!
+            translate_params = options.delete(:translate_params) || {}
+            if (scope = options.delete(:title_scope)).present?
+              html_options[:title] = I18n.t(method, scope: scope, **translate_params)
+            end
+            # special use case for placeholders in select
+            if (scope = options.delete(:placeholder_scope)).present?
+              if choices.respond_to?(:unshift)
+                choices.unshift([I18n.t(method, scope: scope, **translate_params), nil])
+              end
+            end
+
             select_without_bootstrap(method, choices, options, html_options)
           end
         end
