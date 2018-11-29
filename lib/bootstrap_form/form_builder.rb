@@ -47,6 +47,9 @@ module BootstrapForm
             if (scope = options.delete(:placeholder_scope)).present?
               options[:placeholder] = I18n.t(name, scope: scope, **translate_params)
             end
+            if has_error?(name)
+              options[:class] = [options[:class], error_class].compact.join(' ')
+            end
 
             send(without_method_name, name, options)
           end
@@ -247,7 +250,6 @@ module BootstrapForm
       control_wrapper = options.delete(:control_wrapper)
 
       options[:class] = ["form-group", options[:class]].compact.join(' ')
-      options[:class] << " #{error_class}" if has_error?(name)
       options[:class] << " #{feedback_class}" if options[:icon]
 
       # let label: true be valid on form_group and let generate_label do the magic
@@ -318,15 +320,15 @@ module BootstrapForm
     end
 
     def control_class
-      "form-control"
+      'form-control'
     end
 
     def label_class
-      "control-label"
+      'control-label'
     end
 
     def error_class
-      "has-error"
+      'is-invalid'
     end
 
     def feedback_class
@@ -334,7 +336,11 @@ module BootstrapForm
     end
 
     def help_class
-      'help-block'
+      'form-text'
+    end
+
+    def error_help_class
+      'invalid-feedback'
     end
 
     def control_specific_class(method)
@@ -441,11 +447,11 @@ module BootstrapForm
       classes = [options[:class], label_class]
       classes << (custom_label_col || label_col) if get_group_layout(group_layout) == :horizontal
       unless options.delete(:skip_required)
-        classes << "required" if required_attribute?(object, name)
+        classes << 'required' if required_attribute?(object, name)
       end
       hide_attribute_name = options.delete(:hide_attribute_name) || false
 
-      options[:class] = classes.compact.join(" ")
+      options[:class] = classes.compact.join(' ')
 
       if label_errors && has_error?(name)
         error_messages = get_error_messages(name, hide_attribute_name)
@@ -461,9 +467,9 @@ module BootstrapForm
       return if help_text === false
 
       help_text ||= get_help_text_by_i18n_key(name)
-      classes = [options_help_class, help_class].compact.join(' ')
+      classes = [options_help_class, ((has_error?(name) && inline_errors) ? error_help_class : help_class)].compact.join(' ')
 
-      content_tag(:span, help_text, class: classes) if help_text.present?
+      content_tag(:div, help_text, class: classes) if help_text.present?
     end
 
     def generate_icon(icon)

@@ -9,16 +9,17 @@ module BootstrapForm
 
       options[:html] ||= {}
       options[:html][:role] ||= 'form'
+      options[:html][:novalidate] ||= true
 
       layout = case options[:layout]
         when :inline
-          "form-inline"
+          'form-inline'
         when :horizontal
-          "form-horizontal"
+          'form-horizontal'
       end
 
       if layout
-        options[:html][:class] = [options[:html][:class], layout].compact.join(" ")
+        options[:html][:class] = [options[:html][:class], layout].compact.join(' ')
       end
 
       temporarily_disable_field_error_proc do
@@ -29,7 +30,7 @@ module BootstrapForm
     def bootstrap_form_tag(options = {}, &block)
       options[:acts_like_form_tag] = true
 
-      bootstrap_form_for("", options, &block)
+      bootstrap_form_for('', options, &block)
     end
 
     def temporarily_disable_field_error_proc
