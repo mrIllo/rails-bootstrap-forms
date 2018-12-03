@@ -2,16 +2,6 @@ module BootstrapForm
   module Helpers
     module Bootstrap
 
-      def submit(name = nil, options = {})
-        options[:class] = ['btn','btn-default'].concat( (options[:class] || '').split(' ') ).compact.uniq.join(' ')
-        super(name, options)
-      end
-
-      def primary(name = nil, options = {})
-        options[:class] = ['btn-primary'].concat( (options[:class] || '').split(' ') ).compact.uniq.join(' ')
-        submit(name, options)
-      end
-
       def form_link(path, name_or_hash, options = {})
         options.symbolize_keys!
         if name_or_hash.is_a?(Hash)

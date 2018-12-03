@@ -293,6 +293,18 @@ module BootstrapForm
 
     bootstrap_method_alias :fields_for
 
+    def submit_with_bootstrap(name = nil, options = {}, &block)
+      options[:class] = ['btn','btn-default'].concat( (options[:class] || '').split(' ') ).compact.uniq.join(' ')
+      submit_without_bootstrap(name, options, &block)
+    end
+
+    def primary(name = nil, options = {}, &block)
+      options[:class] = ['btn-primary'].concat( (options[:class] || '').split(' ') ).compact.uniq.join(' ')
+      submit_with_bootstrap(name, options, &block)
+    end
+
+    bootstrap_method_alias :submit
+
     private
 
     def horizontal?
