@@ -104,6 +104,19 @@ module BootstrapForm
         "form-control-plaintext"
       end
 
+      def translate_options_by_i18n_keys(name, options = {})
+        options.symbolize_keys!.delete(:hide_attribute_name)
+        translate_params = options.delete(:translate_params) || {}
+        if (scope = options.delete(:title_scope)).present?
+          options[:title] = I18n.t(name, scope: scope, **translate_params)
+        end
+        if (scope = options.delete(:placeholder_scope)).present?
+          options[:placeholder] = I18n.t(name, scope: scope, **translate_params)
+        end
+        puts "options are now: #{options.inspect}"
+        options
+      end
+
       private
 
       def append_input(options)
