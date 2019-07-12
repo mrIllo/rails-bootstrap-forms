@@ -113,7 +113,6 @@ module BootstrapForm
         if (scope = options.delete(:placeholder_scope)).present?
           options[:placeholder] = I18n.t(name, scope: scope, **translate_params)
         end
-        puts "options are now: #{options.inspect}"
         options
       end
 
