@@ -10,7 +10,8 @@ module BootstrapForm
         def check_box_with_bootstrap(name, options={}, checked_value="1", unchecked_value="0", &block)
           options = options.symbolize_keys!
           check_box_options = options.except(:class, :label, :label_class, :error_message, :help,
-                                             :inline, :custom, :hide_label, :skip_label, :wrapper_class)
+                                             :inline, :custom, :hide_label, :skip_label, :wrapper_class,
+                                             :label_scope, :translate_params)
           check_box_options[:class] = check_box_classes(name, options)
 
           content_tag(:div, class: check_box_wrapper_class(options)) do
@@ -34,6 +35,7 @@ module BootstrapForm
                      end
         label_options = { class: check_box_label_class(options) }
         label_options[:for] = options[:id] if options[:id].present?
+        options[:label] = translate_label_by_i18n_key(name, checked_value, options[:label_scope], options[:translate_params]) if options[:label_scope]
         label(label_name, check_box_description(name, options, &block), label_options)
       end
 

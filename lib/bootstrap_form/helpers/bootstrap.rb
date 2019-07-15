@@ -116,6 +116,11 @@ module BootstrapForm
         options
       end
 
+      def translate_label_by_i18n_key(name, value, scope, translate_params = {})
+        translate_params ||= {}
+        I18n.translate("#{name}.#{value}", scope: scope, **translate_params)
+      end
+
       private
 
       def append_input(options)

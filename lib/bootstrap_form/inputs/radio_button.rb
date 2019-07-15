@@ -10,7 +10,8 @@ module BootstrapForm
         def radio_button_with_bootstrap(name, value, *args)
           options = args.extract_options!.symbolize_keys!
           radio_button_options = options.except(:class, :label, :label_class, :error_message, :help,
-                                                :inline, :custom, :hide_label, :skip_label, :wrapper_class)
+                                                :inline, :custom, :hide_label, :skip_label, :wrapper_class,
+                                                :label_scope, :translate_params)
 
           radio_button_options[:class] = radio_button_classes(name, options)
 
@@ -30,6 +31,7 @@ module BootstrapForm
       def radio_button_label(name, value, options)
         label_options = { value: value, class: radio_button_label_class(options) }
         label_options[:for] = options[:id] if options[:id].present?
+        options[:label] = translate_label_by_i18n_key(name, value, options[:label_scope], options[:translate_params]) if options[:label_scope]
         label(name, options[:label], label_options)
       end
 
