@@ -10,6 +10,9 @@ module BootstrapForm
       def generate_label(id, name, options, custom_label_col, group_layout)
         return if options.blank?
 
+        # let label: true be a valid param on form_group
+        options = {} if options.is_a?(TrueClass)
+
         # id is the caller's options[:id] at the only place this method is called.
         # The options argument is a small subset of the options that might have
         # been passed to generate_label's caller, and definitely doesn't include
