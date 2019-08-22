@@ -47,7 +47,7 @@ module BootstrapForm
 
         hide_attribute_name = options[:hide_attribute_name] || false
 
-        content_tag :div, class: "alert alert-danger" do
+        content_tag :div, class: ['alert', 'alert-danger', options[:class]].compact do
           if hide_attribute_name
             object.errors[name].join(", ")
           else
