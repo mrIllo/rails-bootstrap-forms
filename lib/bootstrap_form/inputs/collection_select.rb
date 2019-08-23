@@ -11,6 +11,11 @@ module BootstrapForm
         # rubocop:disable Metrics/ParameterLists
         def collection_select_with_bootstrap(method, collection, value_method, text_method, options={}, html_options={})
           form_group_builder(method, options, html_options) do
+            html_options = translated_options_from_i18n_scope(method, options, html_options)
+            # special use case for promt/placeholders in collection_select
+            if (placeholder = html_options.delete(:placeholder)).present?
+              options[:prompt] ||= placeholder
+            end
             input_with_error(method) do
               collection_select_without_bootstrap(method, collection, value_method, text_method, options, html_options)
             end

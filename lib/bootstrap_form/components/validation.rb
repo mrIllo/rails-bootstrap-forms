@@ -53,9 +53,18 @@ module BootstrapForm
         content_tag(help_tag, help_text, class: help_klass)
       end
 
-      def get_error_messages(name)
-        object.errors[name].join(", ")
+      def get_error_messages(name, hide_attribute_name = true)
+        return object.errors[name].join(", ") if hide_attribute_name
+
+        # replace first error message with full text version of it
+        # and then let Rails build a sentence
+        errors = [].concat(object.errors[name])
+        errors[0] = object.errors.full_messages_for(name).first
+        msg = errors.to_sentence
+        # add a dot if string does not already end with one of the chars !, ? or .
+        /[!.?]/.match(msg[-1, 1]).nil? ? "#{msg}." : msg
       end
+
     end
   end
 end

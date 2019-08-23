@@ -10,7 +10,8 @@ module BootstrapForm
           define_method "#{field_name}_with_bootstrap" do |name, options={}|
             form_group_builder(name, options) do
               prepend_and_append_input(name, options) do
-                send("#{field_name}_without_bootstrap".to_sym, name, translate_options_by_i18n_keys(name, options))
+                options = translated_options_from_i18n_scope(name, options)
+                send("#{field_name}_without_bootstrap".to_sym, name, options)
               end
             end
           end
@@ -23,6 +24,7 @@ module BootstrapForm
           without_field_name = "#{field_name}_without_bootstrap"
           define_method(with_field_name) do |name, options={}, html_options={}|
             form_group_builder(name, options, html_options) do
+              html_options = translated_options_from_i18n_scope(name, options, html_options)
               form_group_content_tag(name, field_name, without_field_name, options, html_options)
             end
           end

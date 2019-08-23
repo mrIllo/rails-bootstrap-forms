@@ -35,12 +35,19 @@ module BootstrapForm
                      end
         label_options = { class: check_box_label_class(options) }
         label_options[:for] = options[:id] if options[:id].present?
-        options[:label] = translate_label_by_i18n_key(name, checked_value, options[:label_scope], options[:translate_params]) if options[:label_scope]
-        label(label_name, check_box_description(name, options, &block), label_options)
+        label(label_name, check_box_description(name, options, checked_value, &block), label_options)
       end
 
-      def check_box_description(name, options, &block)
-        content = block_given? ? capture(&block) : options[:label]
+      def check_box_description(name, options, checked_value, &block)
+        if block_given?
+          content = capture(&block)
+        else
+          content = options.delete(:label) do
+            if options[:label_scope]
+              translate_by_i18n_key name, checked_value, options[:label_scope], options[:translate_params]
+            end
+          end
+        end
         content || object&.class&.human_attribute_name(name) || name.to_s.humanize
       end
 

@@ -10,14 +10,11 @@ module BootstrapForm
       no_wrapper = options[:wrapper] == false
 
       options = form_group_builder_options(options, method)
-
       form_group_options = form_group_opts(options, form_group_css_options(method, html_options.try(:symbolize_keys!), options))
-
       options.except!(
         :help, :icon, :label_col, :control_col, :add_control_col_class, :layout, :skip_label, :label, :label_class,
         :hide_label, :skip_required, :label_as_placeholder, :wrapper_class, :wrapper
       )
-
       if no_wrapper
         yield
       else
@@ -90,7 +87,8 @@ module BootstrapForm
       css_options = html_options || options
       # Add control_class; allow it to be overridden by :control_class option
       control_classes = css_options.delete(:control_class) { control_class }
-      css_options[:class] = [control_classes, css_options[:class]].compact.join(" ")
+      # Add class values from options and html_options
+      css_options[:class] = [control_classes, css_options[:class], options[:class]].compact.join(" ")
       css_options[:class] << " is-invalid" if error?(method)
       css_options[:placeholder] = form_group_placeholder(options, method) if options[:label_as_placeholder]
       css_options

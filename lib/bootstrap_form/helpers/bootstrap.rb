@@ -104,19 +104,24 @@ module BootstrapForm
         "form-control-plaintext"
       end
 
-      def translate_options_by_i18n_keys(name, options = {})
-        options.symbolize_keys!.delete(:hide_attribute_name)
-        translate_params = options.delete(:translate_params) || {}
-        if (scope = options.delete(:title_scope)).present?
-          options[:title] = I18n.t(name, scope: scope, **translate_params)
+      def translated_options_from_i18n_scope(method, options, html_options = {})
+        # creates a dup of html_options
+        translated_options = (html_options || {}).try(:symbolize_keys)
+        options.symbolize_keys!
+        translate_params = options.delete(:translate_params) { Hash.new }
+        [:title, :placeholder].each do |att|
+          scope = options.delete("#{att}_scope".to_sym)
+          att = att.to_sym
+          translated_options[att] ||= options.delete(att) do
+            if scope.present?
+              I18n.translate(method, scope: scope, **translate_params)
+            end
+          end
         end
-        if (scope = options.delete(:placeholder_scope)).present?
-          options[:placeholder] = I18n.t(name, scope: scope, **translate_params)
-        end
-        options
+        html_options.blank? ? options.merge(translated_options) : translated_options
       end
 
-      def translate_label_by_i18n_key(name, value, scope, translate_params = {})
+      def translate_by_i18n_key(name, value, scope, translate_params)
         translate_params ||= {}
         I18n.translate("#{name}.#{value}", scope: scope, **translate_params)
       end

@@ -10,7 +10,7 @@ module BootstrapForm
         def select_with_bootstrap(method, choices=nil, options={}, html_options={}, &block)
           form_group_builder(method, options, html_options) do
             prepend_and_append_input(method, options) do
-              html_options = translate_options_by_i18n_keys(name, html_options)
+              html_options = translated_options_from_i18n_scope(method, options, html_options)
               # special use case for placeholders in select
               if (placeholder = html_options.delete(:placeholder)).present?
                 choices.unshift([placeholder, nil]) if choices.respond_to?(:unshift)
