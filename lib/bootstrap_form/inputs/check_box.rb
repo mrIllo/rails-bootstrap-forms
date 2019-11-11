@@ -11,10 +11,10 @@ module BootstrapForm
           options = options.symbolize_keys!
           check_box_options = options.except(:class, :label, :label_class, :error_message, :help,
                                              :inline, :custom, :hide_label, :skip_label, :wrapper_class,
-                                             :label_scope, :translate_params)
+                                             :label_scope, :title_scope, :translate_params)
           check_box_options[:class] = check_box_classes(name, options)
 
-          content_tag(:div, class: check_box_wrapper_class(options)) do
+          content_tag(:div, class: check_box_wrapper_class(options), title: check_box_wrapper_title(name, checked_value, options)) do
             html = check_box_without_bootstrap(name, check_box_options, checked_value, unchecked_value)
             html.concat(check_box_label(name, options, checked_value, &block)) unless options[:skip_label]
             html.concat(generate_error(name)) if options[:error_message]
@@ -92,6 +92,12 @@ module BootstrapForm
         classes << (options[:custom] == true ? 'custom-checkbox' : "custom-#{options[:custom]}")
         classes << 'custom-control-inline' if layout_inline?(options[:inline])
         classes
+      end
+
+      def check_box_wrapper_title(name, value, options)
+        if options[:title_scope]
+          translate_by_i18n_key name, value, options[:title_scope], options[:translate_params]
+        end
       end
     end
   end

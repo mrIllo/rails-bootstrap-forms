@@ -11,11 +11,11 @@ module BootstrapForm
           options = args.extract_options!.symbolize_keys!
           radio_button_options = options.except(:class, :label, :label_class, :error_message, :help,
                                                 :inline, :custom, :hide_label, :skip_label, :wrapper_class,
-                                                :label_scope, :translate_params)
+                                                :label_scope, :title_scope, :translate_params)
 
           radio_button_options[:class] = radio_button_classes(name, options)
 
-          content_tag(:div, class: radio_button_wrapper_class(options)) do
+          content_tag(:div, class: radio_button_wrapper_class(options), title: radio_button_wrapper_title(name, value, options)) do
             html = radio_button_without_bootstrap(name, value, radio_button_options)
             html.concat(radio_button_label(name, value, options)) unless options[:skip_label]
             html.concat(generate_error(name)) if options[:error_message]
@@ -82,6 +82,12 @@ module BootstrapForm
         classes << (options[:custom] == true ? 'custom-radio' : "custom-#{options[:custom]}")
         classes << 'custom-control-inline' if layout_inline?(options[:inline])
         classes
+      end
+
+      def radio_button_wrapper_title(name, value, options)
+        if options[:title_scope]
+          translate_by_i18n_key name, value, options[:title_scope], options[:translate_params]
+        end
       end
     end
   end
