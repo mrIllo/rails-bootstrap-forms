@@ -88,9 +88,9 @@ module BootstrapForm
 
       def custom_check_box_wrapper_class(options)
         classes = []
-        classes << "custom-control"
-        classes << (options[:custom] == :switch ? "custom-switch" : "custom-checkbox")
-        classes << "custom-control-inline" if layout_inline?(options[:inline])
+        classes << 'custom-control'
+        classes << (options[:custom] == true ? 'custom-checkbox' : "custom-#{options[:custom]}")
+        classes << 'custom-control-inline' if layout_inline?(options[:inline])
         classes
       end
     end
