@@ -24,6 +24,8 @@ module BootstrapForm
       private
 
       def file_field_input(name, options)
+        options = translated_options_from_i18n_scope(name, options)
+
         placeholder = options.delete(:placeholder) || "Choose file"
         placeholder_opts = { class: "custom-file-label" }
         placeholder_opts[:for] = options[:id] if options[:id].present?
