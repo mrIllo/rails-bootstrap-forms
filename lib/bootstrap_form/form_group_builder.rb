@@ -89,8 +89,11 @@ module BootstrapForm
       # Add control_class; allow it to be overridden by :control_class option
       control_classes = css_options.delete(:control_class) { control_class }
       # Add class values from options and html_options
-      css_options[:class] = [control_classes, css_options[:class], options[:class]].compact.join(" ")
-      css_options[:class] << " is-invalid" if error?(method)
+      classes = [control_classes]
+      classes << html_options[:class] if html_options
+      classes << options[:class] if options
+      classes << 'is-invalid' if error?(method)
+      css_options[:class] = classes.compact.join(" ")
       css_options[:placeholder] = form_group_placeholder(options, method) if options[:label_as_placeholder]
       css_options
     end
