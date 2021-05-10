@@ -16,7 +16,9 @@ module BootstrapForm
             # prompt will only be included if method returns nil value
             # include_blank will always include a blank value
             if (placeholder = html_options.delete(:placeholder)).present?
-              options[:include_blank] ||= placeholder
+              options[:include_blank] = placeholder unless options.has_key?(:include_blank)
+              html_options[:'data'] ||= {}
+              html_options[:'data'][:'placeholder'] = placeholder
             end
             input_with_error(method) do
               collection_select_without_bootstrap(method, collection, value_method, text_method, options, html_options)

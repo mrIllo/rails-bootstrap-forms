@@ -108,9 +108,15 @@ module BootstrapForm
         # creates a dup of html_options
         translated_options = (html_options || {}).try(:symbolize_keys)
         options.symbolize_keys!
-        translate_params = options.delete(:translate_params) { Hash.new }
+        translate_params = options.delete(:translate_params) do
+          translated_options.delete(:translate_params) do
+            Hash.new
+          end
+        end
         [:title, :placeholder].each do |att|
-          scope = options.delete("#{att}_scope".to_sym)
+          scope = options.delete(:"#{att}_scope") do
+            translated_options.delete(:"#{att}_scope")
+          end
           att = att.to_sym
           translated_options[att] ||= options.delete(att) do
             if scope.present?

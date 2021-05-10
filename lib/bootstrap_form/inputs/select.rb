@@ -13,7 +13,9 @@ module BootstrapForm
               html_options = translated_options_from_i18n_scope(method, options, html_options)
               # special use case for placeholders in select
               if (placeholder = html_options.delete(:placeholder)).present?
-                choices.unshift([placeholder, nil]) if choices.respond_to?(:unshift)
+                #choices.unshift([placeholder, nil]) if choices.respond_to?(:unshift)
+                html_options[:'data'] ||= {}
+                html_options[:'data'][:'placeholder'] = placeholder
               end
               select_without_bootstrap(method, choices, options, html_options, &block)
             end
