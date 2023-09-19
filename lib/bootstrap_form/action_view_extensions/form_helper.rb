@@ -23,7 +23,7 @@ module BootstrapForm
         options = process_options(options)
 
         with_bootstrap_form_field_error_proc do
-          form_for(record, options, &block)
+          form_for(record, **options, &block)
         end
       end
 
@@ -33,14 +33,14 @@ module BootstrapForm
         options = process_options(options)
 
         with_bootstrap_form_field_error_proc do
-          form_with(options, &block)
+          form_with(**options, &block)
         end
       end
 
       def bootstrap_form_tag(options={}, &block)
         options[:acts_like_form_tag] = true
 
-        bootstrap_form_for("", options, &block)
+        bootstrap_form_for("", **options, &block)
       end
 
       private
