@@ -11,7 +11,7 @@ module BootstrapForm
           options = options.symbolize_keys!
           check_box_options = options.except(:class, :label, :label_class, :error_message, :help,
                                              :inline, :custom, :hide_label, :skip_label, :wrapper_class,
-                                             :label_scope, :title_scope, :translate_params)
+                                             :label_scope, :title_scope, :translate_params, :hide_attribute_name)
           check_box_options[:class] = check_box_classes(name, options)
 
           content_tag(:div, class: check_box_wrapper_class(options), title: check_box_wrapper_title(name, checked_value, options)) do
