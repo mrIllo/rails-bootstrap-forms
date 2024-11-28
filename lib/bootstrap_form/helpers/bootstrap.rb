@@ -78,7 +78,7 @@ module BootstrapForm
       end
 
       def prepend_and_append_input(name, options, &block)
-        options = options.extract!(:prepend, :append, :input_group_class)
+        options = options.extract!(:prepend, :prepend_class, :append, :append_class, :input_group_class)
 
         input = capture(&block) || ActiveSupport::SafeBuffer.new
 
@@ -135,12 +135,16 @@ module BootstrapForm
       private
 
       def append_input(options)
-        html = content_tag(:div, input_group_content(options[:append]), class: "input-group-append") if options[:append]
+        html_class = 'input-group-append'
+        html_class = "#{html_class} #{options[:append_class]}" if options[:append_class]
+        html = content_tag(:div, input_group_content(options[:append]), class: html_class) if options[:append]
         html || ActiveSupport::SafeBuffer.new
       end
 
       def prepend_input(options)
-        html = content_tag(:div, input_group_content(options[:prepend]), class: "input-group-prepend") if options[:prepend]
+        html_class = 'input-group-prepend'
+        html_class = "#{html_class} #{options[:prepend_class]}" if options[:prepend_class]
+        html = content_tag(:div, input_group_content(options[:prepend]), class: html_class) if options[:prepend]
         html || ActiveSupport::SafeBuffer.new
       end
 
