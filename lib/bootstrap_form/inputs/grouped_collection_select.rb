@@ -13,10 +13,10 @@ module BootstrapForm
                                                      group_label_method, option_key_method,
                                                      option_value_method, options={}, html_options={})
           form_group_builder(method, options, html_options) do
-            input_with_error(method) do
+            input_with_error(method, options[:feedback_class]) do
               grouped_collection_select_without_bootstrap(method, collection, group_method,
                                                           group_label_method, option_key_method,
-                                                          option_value_method, options, html_options)
+                                                          option_value_method, options.except(:feedback_class), html_options)
             end
           end
         end

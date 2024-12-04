@@ -11,8 +11,8 @@ module BootstrapForm
           options = options.reverse_merge(control_class: "custom-file-input")
           form_group_builder(name, options) do
             content_tag(:div, class: "custom-file") do
-              input_with_error(name) do
-                file_field_input(name, options)
+              input_with_error(name, options[:feedback_class]) do
+                file_field_input(name, options.except(:feedback_class))
               end
             end
           end

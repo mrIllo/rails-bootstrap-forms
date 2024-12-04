@@ -11,7 +11,7 @@ module BootstrapForm
       options[:class] = form_group_classes(options)
 
       content_tag(:div, options.except(:append, :append_class, :id, :label, :help, :icon,
-                                       :input_group_class, :label_col, :control_col,
+                                       :input_group_class, :label_col, :control_col, :feedback_class,
                                        :add_control_col_class, :layout, :prepend, :prepend_class)) do
         form_group_content(
           generate_label(options[:id], name, options[:label], options[:label_col], options[:layout]),
@@ -26,8 +26,8 @@ module BootstrapForm
       html_class = control_specific_class(field_name)
       html_class = "#{html_class} form-inline" if @layout == :horizontal && options[:skip_inline].blank?
       content_tag(:div, class: html_class) do
-        input_with_error(name) do
-          send(without_field_name, name, options, html_options)
+        input_with_error(name, options[:feedback_class] ) do
+          send(without_field_name, name, options.except(:feedback_class), html_options)
         end
       end
     end

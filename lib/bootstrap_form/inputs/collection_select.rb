@@ -20,8 +20,8 @@ module BootstrapForm
               html_options[:'data'] ||= {}
               html_options[:'data'][:'placeholder'] = placeholder
             end
-            input_with_error(method) do
-              collection_select_without_bootstrap(method, collection, value_method, text_method, options, html_options)
+            input_with_error(method, options[:feedback_class]) do
+              collection_select_without_bootstrap(method, collection, value_method, text_method, options.except(:feedback_class), html_options)
             end
           end
         end
