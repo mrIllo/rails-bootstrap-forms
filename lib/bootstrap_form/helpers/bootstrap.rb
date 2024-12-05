@@ -44,10 +44,11 @@ module BootstrapForm
 
       def errors_on(name, options={})
         return unless error?(name)
+        css = options[:class] || "alert alert-danger"
 
         hide_attribute_name = options[:hide_attribute_name] || false
 
-        content_tag :div, class: ['alert', 'alert-danger', options[:class]].compact do
+        content_tag :div, class: css do
           if hide_attribute_name
             object.errors[name].join(", ")
           else
@@ -78,21 +79,21 @@ module BootstrapForm
       end
 
       def prepend_and_append_input(name, options, &block)
-        feedback_class = options[:feedback_class]
+        feedback_klass = options[:feedback_class]
         options = options.extract!(:prepend, :prepend_class, :append, :append_class, :input_group_class)
 
         input = capture(&block) || ActiveSupport::SafeBuffer.new
 
         input = prepend_input(options) + input + append_input(options)
-        input += generate_error(name, feedback_class)
+        input += generate_error(name, feedback_klass)
         options.present? &&
           input = content_tag(:div, input, class: ["input-group", options[:input_group_class]].compact)
         input
       end
 
-      def input_with_error(name, feedback_class='', &block)
+      def input_with_error(name, feedback_klass='', &block)
         input = capture(&block)
-        input << generate_error(name, feedback_class)
+        input << generate_error(name, feedback_klass)
       end
 
       def input_group_content(content)
