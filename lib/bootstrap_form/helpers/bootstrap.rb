@@ -80,7 +80,7 @@ module BootstrapForm
 
       def prepend_and_append_input(name, options, &block)
         feedback_klass = options[:feedback_class]
-        options = options.extract!(:prepend, :prepend_class, :append, :append_class, :input_group_class)
+        options = options.extract!(:prepend, :prepend_class, :append, :append_class, :input_group_class, :feedback_class)
 
         input = capture(&block) || ActiveSupport::SafeBuffer.new
 
