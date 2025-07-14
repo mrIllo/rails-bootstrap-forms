@@ -17,7 +17,7 @@ module BootstrapForm
                 html_options[:'data'] ||= {}
                 html_options[:'data'][:'placeholder'] = placeholder
               end
-              select_without_bootstrap(method, choices, options, html_options, &block)
+              select_without_bootstrap(method, choices, options, html_options.except(:hide_attribute_name), &block)
             end
           end
         end
